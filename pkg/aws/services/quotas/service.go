@@ -2,6 +2,7 @@ package quotas
 
 import (
 	"github.com/aws/aws-sdk-go/service/servicequotas/servicequotasiface"
+
 	"github.com/giantswarm/aws-servicequotas-operator/pkg/aws/scope"
 )
 

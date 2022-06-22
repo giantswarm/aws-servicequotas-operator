@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/servicequotas"
+
 	"github.com/giantswarm/aws-servicequotas-operator/pkg/aws/scope"
 	"github.com/giantswarm/aws-servicequotas-operator/pkg/aws/services/quotas"
 )
