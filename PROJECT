@@ -1,0 +1,12 @@
+domain: giantswarm.io
+layout:
+- go.kubebuilder.io/v3
+projectName: aws-servicequotas-operator
+repo: github.com/giantswarm/aws-servicequotas-operator
+resources:
+- controller: true
+  domain: giantswarm.io
+  group: giantswarm.io
+  kind: AWSCluster
+  version: v1
+version: "3"
