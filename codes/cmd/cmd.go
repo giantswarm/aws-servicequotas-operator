@@ -88,11 +88,10 @@ func getQuotas() {
 		input.NextToken = output.NextToken
 	}
 
-	fmt.Println("Default quotas:")
-	json.NewEncoder(os.Stdout).Encode(defaultQuotas)
-	fmt.Println("Applied quotas:")
-	fmt.Println("Default quotas:")
-	json.NewEncoder(os.Stdout).Encode(appliedQuotas)
+	i := map[string][]*servicequotas.ServiceQuota{}
+	i["default"] = defaultQuotas
+	i["applied"] = appliedQuotas
+	json.NewEncoder(os.Stdout).Encode(i)
 }
 
 func sessionForRegion(region string) (*session.Session, error) {

@@ -85,6 +85,12 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 				Code:  aws.String("L-0263D0A3"),
 				Value: aws.Float64(50),
 			},
+			{
+				Description: "Running On-Demand Standard (A, C, D, H, I, M, R, T, Z) instances",
+
+				Code:  aws.String("L-1216C47A"),
+				Value: aws.Float64(250),
+			},
 		},
 		"elasticloadbalancing": {
 			{
@@ -205,10 +211,10 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 								s.Scope.Error(err, "Failed to request service quota increase")
 							}
 						}
-						s.Scope.Info(fmt.Sprintf("Quota successfully requested for Service %s, Code %s", quotaCodeValue.Description, *quotaCodeValue.Code), s.Scope.ClusterNamespace(), s.Scope.ClusterName())
+						s.Scope.Info(fmt.Sprintf("Quota successfully requested for Service %s: Code %s, Desired Value: %v", quotaCodeValue.Description, *quotaCodeValue.Code, *quotaCodeValue.Value), s.Scope.ClusterNamespace(), s.Scope.ClusterName())
 					}
 				} else {
-					s.Scope.Info(fmt.Sprintf("Would set quota for Service %s: Code %s Desired Value: %v ", quotaCodeValue.Description, *quotaCodeValue.Code, *quotaCodeValue.Value))
+					s.Scope.Info(fmt.Sprintf("Would set quota for Service %s: Code %s, Desired Value: %v ", quotaCodeValue.Description, *quotaCodeValue.Code, *quotaCodeValue.Value))
 				}
 			}
 		}
