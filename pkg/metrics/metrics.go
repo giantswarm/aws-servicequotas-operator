@@ -24,8 +24,8 @@ var (
 		prometheus.GaugeOpts{
 			Namespace: metricNamespace,
 			Subsystem: metricSubsystem,
-			Name:      "quota_increase_errors",
-			Help:      "Number of service quota increase errors",
+			Name:      "quota_increase_request_errors",
+			Help:      "Number of service quota increase request errors",
 		},
 		labels,
 	)
@@ -33,8 +33,8 @@ var (
 		prometheus.GaugeOpts{
 			Namespace: metricNamespace,
 			Subsystem: metricSubsystem,
-			Name:      "quota_applied_errors",
-			Help:      "Number of get applied quota errors",
+			Name:      "quota_applied_request_errors",
+			Help:      "Number of applied quota request errors",
 		},
 		labels,
 	)
@@ -42,8 +42,8 @@ var (
 		prometheus.GaugeOpts{
 			Namespace: metricNamespace,
 			Subsystem: metricSubsystem,
-			Name:      "quota_history_errors",
-			Help:      "Number of service quota history errors",
+			Name:      "quota_history_request_errors",
+			Help:      "Number of service quota history request errors",
 		},
 		labels,
 	)
