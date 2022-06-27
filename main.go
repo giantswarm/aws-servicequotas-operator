@@ -59,7 +59,7 @@ func main() {
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
-	flag.BoolVar(&dryRun, "dry-run", true, "Enable dry run mode.")
+	flag.BoolVar(&dryRun, "dry-run", false, "Enable dry run mode.")
 	opts := zap.Options{
 		TimeEncoder: zapcore.RFC3339TimeEncoder,
 		Development: false,
