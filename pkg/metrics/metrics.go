@@ -9,15 +9,16 @@ const (
 	metricNamespace = "aws_servicequotas_operator"
 	metricSubsystem = "cluster"
 
-	labelCluster     = "cluster_id"
-	labelNamespace   = "cluster_namespace"
-	labelServiceName = "service_name"
-	labelQuotaName   = "quota_name"
-	labelQuotaValue  = "quota_value"
+	labelCluster          = "cluster_id"
+	labelNamespace        = "cluster_namespace"
+	labelServiceName      = "service_name"
+	labelQuotaDescription = "quota_description"
+	labelQuotaCode        = "quota_code"
+	labelQuotaValue       = "quota_value"
 )
 
 var (
-	labels = []string{labelCluster, labelNamespace, labelServiceName, labelQuotaName, labelQuotaValue}
+	labels = []string{labelCluster, labelNamespace, labelServiceName, labelQuotaDescription, labelQuotaCode, labelQuotaValue}
 
 	QuotaIncreaseErrors = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
