@@ -209,6 +209,8 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 								switch awsErr.Code() {
 								case servicequotas.ErrCodeResourceAlreadyExistsException:
 									s.Scope.Info("Service quota already requested, skipping")
+								case servicequotas.ErrCodeIllegalArgumentException:
+									s.Scope.Info("Current service quota value is already greater, skipping")
 								default:
 									ctrlmetrics.QuotaIncreaseErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 									s.Scope.Error(err, "Failed to request service quota increase")
