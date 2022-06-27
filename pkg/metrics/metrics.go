@@ -7,7 +7,7 @@ import (
 
 const (
 	metricNamespace = "aws_servicequotas_operator"
-	metricSubsystem = "cluster"
+	metricSubsystem = "quota"
 
 	labelCluster          = "cluster_id"
 	labelNamespace        = "cluster_namespace"
@@ -24,7 +24,7 @@ var (
 		prometheus.GaugeOpts{
 			Namespace: metricNamespace,
 			Subsystem: metricSubsystem,
-			Name:      "quota_increase_request_errors",
+			Name:      "increase_request_errors",
 			Help:      "Number of service quota increase request errors",
 		},
 		labels,
@@ -33,7 +33,7 @@ var (
 		prometheus.GaugeOpts{
 			Namespace: metricNamespace,
 			Subsystem: metricSubsystem,
-			Name:      "quota_applied_request_errors",
+			Name:      "applied_request_errors",
 			Help:      "Number of applied quota request errors",
 		},
 		labels,
@@ -42,7 +42,7 @@ var (
 		prometheus.GaugeOpts{
 			Namespace: metricNamespace,
 			Subsystem: metricSubsystem,
-			Name:      "quota_history_request_errors",
+			Name:      "history_request_errors",
 			Help:      "Number of service quota history request errors",
 		},
 		labels,
