@@ -153,7 +153,7 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 				}
 			}
 			if appliedOutput.Quota != nil {
-				if *quotaCodeValue.Value >= *appliedOutput.Quota.Value {
+				if *quotaCodeValue.Value > *appliedOutput.Quota.Value {
 					increaseQuota = true
 				} else {
 					continue
