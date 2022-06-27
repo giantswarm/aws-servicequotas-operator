@@ -3,6 +3,7 @@ package quotas
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -12,6 +13,7 @@ import (
 
 	"github.com/giantswarm/aws-servicequotas-operator/pkg/aws/scope"
 	"github.com/giantswarm/aws-servicequotas-operator/pkg/aws/services/quotas"
+	ctrlmetrics "github.com/giantswarm/aws-servicequotas-operator/pkg/metrics"
 )
 
 type QuotasService struct {
@@ -140,10 +142,12 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 					case servicequotas.ErrCodeNoSuchResourceException:
 						// fall through
 					default:
+						ctrlmetrics.QuotaAppliedErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 						s.Scope.Error(err, "Failed to get applied service quota")
 						continue
 					}
 				} else {
+					ctrlmetrics.QuotaAppliedErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 					s.Scope.Error(err, "Failed to get applied service quota")
 					continue
 				}
@@ -164,6 +168,7 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 			for {
 				historyOutput, err = s.Quotas.Client.ListRequestedServiceQuotaChangeHistoryByQuota(historyInput)
 				if err != nil {
+					ctrlmetrics.QuotaHistoryErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 					s.Scope.Error(err, "Failed to list requested service quota change history by quota")
 					break
 				}
@@ -205,9 +210,11 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 								case servicequotas.ErrCodeResourceAlreadyExistsException:
 									s.Scope.Info("Service quota already requested, skipping")
 								default:
+									ctrlmetrics.QuotaIncreaseErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 									s.Scope.Error(err, "Failed to request service quota increase")
 								}
 							} else {
+								ctrlmetrics.QuotaIncreaseErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 								s.Scope.Error(err, "Failed to request service quota increase")
 							}
 						}
