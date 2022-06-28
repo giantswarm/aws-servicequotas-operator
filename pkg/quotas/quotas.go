@@ -3,6 +3,7 @@ package quotas
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -12,6 +13,7 @@ import (
 
 	"github.com/giantswarm/aws-servicequotas-operator/pkg/aws/scope"
 	"github.com/giantswarm/aws-servicequotas-operator/pkg/aws/services/quotas"
+	ctrlmetrics "github.com/giantswarm/aws-servicequotas-operator/pkg/metrics"
 )
 
 type QuotasService struct {
@@ -140,16 +142,18 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 					case servicequotas.ErrCodeNoSuchResourceException:
 						// fall through
 					default:
+						ctrlmetrics.QuotaAppliedErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 						s.Scope.Error(err, "Failed to get applied service quota")
 						continue
 					}
 				} else {
+					ctrlmetrics.QuotaAppliedErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 					s.Scope.Error(err, "Failed to get applied service quota")
 					continue
 				}
 			}
 			if appliedOutput.Quota != nil {
-				if *quotaCodeValue.Value >= *appliedOutput.Quota.Value {
+				if *quotaCodeValue.Value > *appliedOutput.Quota.Value {
 					increaseQuota = true
 				} else {
 					continue
@@ -164,6 +168,7 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 			for {
 				historyOutput, err = s.Quotas.Client.ListRequestedServiceQuotaChangeHistoryByQuota(historyInput)
 				if err != nil {
+					ctrlmetrics.QuotaHistoryErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 					s.Scope.Error(err, "Failed to list requested service quota change history by quota")
 					break
 				}
@@ -204,11 +209,19 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 								switch awsErr.Code() {
 								case servicequotas.ErrCodeResourceAlreadyExistsException:
 									s.Scope.Info("Service quota already requested, skipping")
+									continue
+								case servicequotas.ErrCodeIllegalArgumentException:
+									s.Scope.Info("Current service quota value is already greater, skipping")
+									continue
 								default:
+									ctrlmetrics.QuotaIncreaseErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 									s.Scope.Error(err, "Failed to request service quota increase")
+									continue
 								}
 							} else {
+								ctrlmetrics.QuotaIncreaseErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 								s.Scope.Error(err, "Failed to request service quota increase")
+								continue
 							}
 						}
 						s.Scope.Info(fmt.Sprintf("Quota successfully requested for Service %s: Code %s, Desired Value: %v", quotaCodeValue.Description, *quotaCodeValue.Code, *quotaCodeValue.Value), s.Scope.ClusterNamespace(), s.Scope.ClusterName())
