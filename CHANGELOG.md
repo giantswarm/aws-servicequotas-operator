@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added feature to enable/disable operator. 
+
 ## [0.1.0] - 2022-06-28
 
 [Unreleased]: https://github.com/giantswarm/aws-servicequotas-operator/compare/v0.1.0...HEAD
