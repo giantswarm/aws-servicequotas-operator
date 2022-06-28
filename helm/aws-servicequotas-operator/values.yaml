@@ -1,3 +1,4 @@
+enabled: true
 aws:
   accessKeyID: accesskey
   secretAccessKey: secretkey
