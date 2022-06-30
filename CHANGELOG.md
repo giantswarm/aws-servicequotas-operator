@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added applied quota value metrics.
+- Added account id to metrics.
+
 ## [0.2.0] - 2022-06-28
 
 ### Added

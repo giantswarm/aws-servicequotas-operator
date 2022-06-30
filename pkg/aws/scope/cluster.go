@@ -12,6 +12,7 @@ import (
 
 // ClusterScopeParams defines the input parameters used to create a new Scope.
 type ClusterScopeParams struct {
+	AccountId        string
 	ARN              string
 	Cluster          runtime.Object
 	ClusterName      string
@@ -25,6 +26,9 @@ type ClusterScopeParams struct {
 // NewClusterScope creates a new Scope from the supplied parameters.
 // This is meant to be called for each reconcile iteration.
 func NewClusterScope(params ClusterScopeParams) (*ClusterScope, error) {
+	if params.AccountId == "" {
+		return nil, errors.New("failed to generate new scope from emtpy string AccountID")
+	}
 	if params.ARN == "" {
 		return nil, errors.New("failed to generate new scope from emtpy string ARN")
 	}
@@ -55,6 +59,7 @@ func NewClusterScope(params ClusterScopeParams) (*ClusterScope, error) {
 	}
 
 	return &ClusterScope{
+		accountId:        params.AccountId,
 		assumeRole:       params.ARN,
 		cluster:          params.Cluster,
 		clusterName:      params.ClusterName,
@@ -67,6 +72,7 @@ func NewClusterScope(params ClusterScopeParams) (*ClusterScope, error) {
 
 // ClusterScope defines the basic context for an actuator to operate upon.
 type ClusterScope struct {
+	accountId        string
 	assumeRole       string
 	cluster          runtime.Object
 	clusterName      string
@@ -75,6 +81,11 @@ type ClusterScope struct {
 
 	logr.Logger
 	session awsclient.ConfigProvider
+}
+
+// AccountId returns the AWS account id from cluster object.
+func (s *ClusterScope) AccountId() string {
+	return s.accountId
 }
 
 // ARN returns the AWS SDK assumed role.
