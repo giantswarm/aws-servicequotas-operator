@@ -9,6 +9,7 @@ const (
 	metricNamespace = "aws_servicequotas_operator"
 	metricSubsystem = "quota"
 
+	labelAccountId        = "account_id"
 	labelCluster          = "cluster_id"
 	labelNamespace        = "cluster_namespace"
 	labelServiceName      = "service_name"
@@ -18,7 +19,8 @@ const (
 )
 
 var (
-	labels = []string{labelCluster, labelNamespace, labelServiceName, labelQuotaDescription, labelQuotaCode, labelQuotaValue}
+	errorLabels = []string{labelAccountId, labelCluster, labelNamespace, labelServiceName, labelQuotaDescription, labelQuotaCode, labelQuotaValue}
+	infoLabels  = []string{labelAccountId, labelCluster, labelNamespace, labelServiceName, labelQuotaDescription, labelQuotaCode}
 
 	QuotaIncreaseErrors = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -27,7 +29,7 @@ var (
 			Name:      "increase_request_errors",
 			Help:      "Number of service quota increase request errors",
 		},
-		labels,
+		errorLabels,
 	)
 	QuotaAppliedErrors = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -36,7 +38,7 @@ var (
 			Name:      "applied_request_errors",
 			Help:      "Number of applied quota request errors",
 		},
-		labels,
+		errorLabels,
 	)
 	QuotaHistoryErrors = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -45,11 +47,21 @@ var (
 			Name:      "history_request_errors",
 			Help:      "Number of service quota history request errors",
 		},
-		labels,
+		errorLabels,
+	)
+
+	QuotaAppliedValues = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: metricNamespace,
+			Subsystem: metricSubsystem,
+			Name:      "applied_values",
+			Help:      "Number of applied quota values",
+		},
+		infoLabels,
 	)
 )
 
 func init() {
 	// Register custom metrics with the global prometheus registry
-	metrics.Registry.MustRegister(QuotaHistoryErrors, QuotaAppliedErrors, QuotaIncreaseErrors)
+	metrics.Registry.MustRegister(QuotaAppliedValues, QuotaHistoryErrors, QuotaAppliedErrors, QuotaIncreaseErrors)
 }

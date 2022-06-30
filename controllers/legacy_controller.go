@@ -98,6 +98,7 @@ func (r *AWSLegacyClusterReconciler) Reconcile(ctx context.Context, req ctrl.Req
 
 	// create the cluster scope.
 	clusterScope, err := scope.NewClusterScope(scope.ClusterScopeParams{
+		AccountId:        accountID,
 		ARN:              arn,
 		ClusterName:      cluster.Name,
 		ClusterNamespace: cluster.Namespace,

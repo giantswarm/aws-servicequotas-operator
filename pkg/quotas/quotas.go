@@ -142,17 +142,18 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 					case servicequotas.ErrCodeNoSuchResourceException:
 						// fall through
 					default:
-						ctrlmetrics.QuotaAppliedErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
+						ctrlmetrics.QuotaAppliedErrors.WithLabelValues(s.Scope.AccountId(), s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 						s.Scope.Error(err, "Failed to get applied service quota")
 						continue
 					}
 				} else {
-					ctrlmetrics.QuotaAppliedErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
+					ctrlmetrics.QuotaAppliedErrors.WithLabelValues(s.Scope.AccountId(), s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 					s.Scope.Error(err, "Failed to get applied service quota")
 					continue
 				}
 			}
 			if appliedOutput.Quota != nil {
+				ctrlmetrics.QuotaAppliedValues.WithLabelValues(s.Scope.AccountId(), s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code).Set(*appliedOutput.Quota.Value)
 				if *quotaCodeValue.Value > *appliedOutput.Quota.Value {
 					increaseQuota = true
 				} else {
@@ -168,7 +169,7 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 			for {
 				historyOutput, err = s.Quotas.Client.ListRequestedServiceQuotaChangeHistoryByQuota(historyInput)
 				if err != nil {
-					ctrlmetrics.QuotaHistoryErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
+					ctrlmetrics.QuotaHistoryErrors.WithLabelValues(s.Scope.AccountId(), s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 					s.Scope.Error(err, "Failed to list requested service quota change history by quota")
 					break
 				}
@@ -179,8 +180,9 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 			}
 
 			if historyOutput != nil {
-				count := 0
+				var count int
 				for _, r := range historyOutput.RequestedQuotas {
+					ctrlmetrics.QuotaAppliedValues.WithLabelValues(s.Scope.AccountId(), s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code).Set(*r.DesiredValue)
 					if (*quotaCodeValue.Value > *r.DesiredValue) &&
 						(*r.QuotaCode == *quotaCodeValue.Code) &&
 						(*r.ServiceCode == serviceCode) {
@@ -214,12 +216,12 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 									s.Scope.Info("Current service quota value is already greater, skipping")
 									continue
 								default:
-									ctrlmetrics.QuotaIncreaseErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
+									ctrlmetrics.QuotaIncreaseErrors.WithLabelValues(s.Scope.AccountId(), s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 									s.Scope.Error(err, "Failed to request service quota increase")
 									continue
 								}
 							} else {
-								ctrlmetrics.QuotaIncreaseErrors.WithLabelValues(s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
+								ctrlmetrics.QuotaIncreaseErrors.WithLabelValues(s.Scope.AccountId(), s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 								s.Scope.Error(err, "Failed to request service quota increase")
 								continue
 							}
