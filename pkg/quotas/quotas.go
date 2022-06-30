@@ -180,20 +180,18 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 			}
 
 			if historyOutput != nil {
-				var historyValue float64
 				var count int
 				for _, r := range historyOutput.RequestedQuotas {
+					ctrlmetrics.QuotaAppliedValues.WithLabelValues(s.Scope.AccountId(), s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code).Set(*r.DesiredValue)
 					if (*quotaCodeValue.Value > *r.DesiredValue) &&
 						(*r.QuotaCode == *quotaCodeValue.Code) &&
 						(*r.ServiceCode == serviceCode) {
-						historyValue = *r.DesiredValue
 						count++
 					}
 				}
 				if count == len(historyOutput.RequestedQuotas) {
 					increaseQuota = true
 				}
-				ctrlmetrics.QuotaAppliedValues.WithLabelValues(s.Scope.AccountId(), s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code).Set(historyValue)
 			}
 
 			if increaseQuota {
