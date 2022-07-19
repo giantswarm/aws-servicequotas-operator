@@ -29,8 +29,12 @@ spec:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.registry.domain }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
         env:
+        - name: DEFAULT_AWS_MGMT_ARN
+          value: {{ .Values.aws.arn }}
         - name: AWS_SHARED_CREDENTIALS_FILE
           value: /home/.aws/credentials
+        args:
+         - --mgmt-arn=$(DEFAULT_AWS_MGTM_ARN)
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:

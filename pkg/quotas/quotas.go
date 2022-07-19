@@ -111,13 +111,15 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 		"autoscaling": {
 			{
 				Description: "Auto Scaling groups per region",
-				Code:        aws.String("L-CDE20ADC"),
-				Value:       aws.Float64(250),
+
+				Code:  aws.String("L-CDE20ADC"),
+				Value: aws.Float64(250),
 			},
 			{
 				Description: "Launch configurations per region",
-				Code:        aws.String("L-6B80B8FA"),
-				Value:       aws.Float64(500),
+
+				Code:  aws.String("L-6B80B8FA"),
+				Value: aws.Float64(500),
 			},
 		},
 	}
@@ -205,28 +207,30 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 						},
 					}
 					for _, r := range increaseRequests {
-						_, err = s.Quotas.Client.RequestServiceQuotaIncrease(r)
-						if err != nil {
-							if awsErr, ok := err.(awserr.Error); ok {
-								switch awsErr.Code() {
-								case servicequotas.ErrCodeResourceAlreadyExistsException:
-									s.Scope.Info("Service quota already requested, skipping")
-									continue
-								case servicequotas.ErrCodeIllegalArgumentException:
-									s.Scope.Info("Current service quota value is already greater, skipping")
-									continue
-								default:
+						if s.Scope.AccountId() != s.Scope.ManagementAccountId() {
+							_, err = s.Quotas.Client.RequestServiceQuotaIncrease(r)
+							if err != nil {
+								if awsErr, ok := err.(awserr.Error); ok {
+									switch awsErr.Code() {
+									case servicequotas.ErrCodeResourceAlreadyExistsException:
+										s.Scope.Info("Service quota already requested, skipping")
+										continue
+									case servicequotas.ErrCodeIllegalArgumentException:
+										s.Scope.Info("Current service quota value is already greater, skipping")
+										continue
+									default:
+										ctrlmetrics.QuotaIncreaseErrors.WithLabelValues(s.Scope.AccountId(), s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
+										s.Scope.Error(err, "Failed to request service quota increase")
+										continue
+									}
+								} else {
 									ctrlmetrics.QuotaIncreaseErrors.WithLabelValues(s.Scope.AccountId(), s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
 									s.Scope.Error(err, "Failed to request service quota increase")
 									continue
 								}
-							} else {
-								ctrlmetrics.QuotaIncreaseErrors.WithLabelValues(s.Scope.AccountId(), s.Scope.ClusterName(), s.Scope.ClusterNamespace(), serviceCode, quotaCodeValue.Description, *quotaCodeValue.Code, strconv.Itoa(int(*quotaCodeValue.Value))).Inc()
-								s.Scope.Error(err, "Failed to request service quota increase")
-								continue
 							}
+							s.Scope.Info(fmt.Sprintf("Quota successfully requested for Service %s: Code %s, Desired Value: %v", quotaCodeValue.Description, *quotaCodeValue.Code, *quotaCodeValue.Value), s.Scope.ClusterNamespace(), s.Scope.ClusterName())
 						}
-						s.Scope.Info(fmt.Sprintf("Quota successfully requested for Service %s: Code %s, Desired Value: %v", quotaCodeValue.Description, *quotaCodeValue.Code, *quotaCodeValue.Value), s.Scope.ClusterNamespace(), s.Scope.ClusterName())
 					}
 				} else {
 					s.Scope.Info(fmt.Sprintf("Would set quota for Service %s: Code %s, Desired Value: %v ", quotaCodeValue.Description, *quotaCodeValue.Code, *quotaCodeValue.Value))

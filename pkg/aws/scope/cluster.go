@@ -12,12 +12,13 @@ import (
 
 // ClusterScopeParams defines the input parameters used to create a new Scope.
 type ClusterScopeParams struct {
-	AccountId        string
-	ARN              string
-	Cluster          runtime.Object
-	ClusterName      string
-	ClusterNamespace string
-	Region           string
+	AccountId           string
+	ManagementAccountId string
+	ARN                 string
+	Cluster             runtime.Object
+	ClusterName         string
+	ClusterNamespace    string
+	Region              string
 
 	Logger  logr.Logger
 	Session awsclient.ConfigProvider
@@ -28,6 +29,9 @@ type ClusterScopeParams struct {
 func NewClusterScope(params ClusterScopeParams) (*ClusterScope, error) {
 	if params.AccountId == "" {
 		return nil, errors.New("failed to generate new scope from emtpy string AccountID")
+	}
+	if params.ManagementAccountId == "" {
+		return nil, errors.New("failed to generate new scope from emtpy string ManagementAccountID")
 	}
 	if params.ARN == "" {
 		return nil, errors.New("failed to generate new scope from emtpy string ARN")
@@ -60,6 +64,7 @@ func NewClusterScope(params ClusterScopeParams) (*ClusterScope, error) {
 
 	return &ClusterScope{
 		accountId:        params.AccountId,
+		mgmtAccountId:    params.ManagementAccountId,
 		assumeRole:       params.ARN,
 		cluster:          params.Cluster,
 		clusterName:      params.ClusterName,
@@ -73,6 +78,7 @@ func NewClusterScope(params ClusterScopeParams) (*ClusterScope, error) {
 // ClusterScope defines the basic context for an actuator to operate upon.
 type ClusterScope struct {
 	accountId        string
+	mgmtAccountId    string
 	assumeRole       string
 	cluster          runtime.Object
 	clusterName      string
@@ -86,6 +92,11 @@ type ClusterScope struct {
 // AccountId returns the AWS account id from cluster object.
 func (s *ClusterScope) AccountId() string {
 	return s.accountId
+}
+
+// ManagementAccountId returns the AWS account id from management cluster.
+func (s *ClusterScope) ManagementAccountId() string {
+	return s.mgmtAccountId
 }
 
 // ARN returns the AWS SDK assumed role.

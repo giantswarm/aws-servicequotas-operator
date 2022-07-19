@@ -54,8 +54,10 @@ func main() {
 	var enableLeaderElection bool
 	var probeAddr string
 	var dryRun bool
+	var mgmtARN string
 	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")
 	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
+	flag.StringVar(&mgmtARN, "mgmt-arn", "", "The ARN of the management account.")
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
@@ -83,10 +85,11 @@ func main() {
 	}
 
 	if err = (&controllers.AWSLegacyClusterReconciler{
-		Client: mgr.GetClient(),
-		DryRun: dryRun,
-		Scheme: mgr.GetScheme(),
-		Log:    ctrl.Log.WithName("controllers").WithName("AWSCluster"),
+		Client:  mgr.GetClient(),
+		MgmtARN: mgmtARN,
+		DryRun:  dryRun,
+		Scheme:  mgr.GetScheme(),
+		Log:     ctrl.Log.WithName("controllers").WithName("AWSCluster"),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "AWSCluster")
 		os.Exit(1)

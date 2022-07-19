@@ -40,9 +40,10 @@ import (
 // AWSLegcyClusterReconciler reconciles a Giant Swarm AWSCluster object
 type AWSLegacyClusterReconciler struct {
 	client.Client
-	DryRun bool
-	Log    logr.Logger
-	Scheme *runtime.Scheme
+	MgmtARN string
+	DryRun  bool
+	Log     logr.Logger
+	Scheme  *runtime.Scheme
 }
 
 //+kubebuilder:rbac:groups=giantswarm.io.giantswarm.io,resources=awsclusters,verbs=get;list;watch;create;update;patch;delete
@@ -96,13 +97,23 @@ func (r *AWSLegacyClusterReconciler) Reconcile(ctx context.Context, req ctrl.Req
 
 	}
 
+	// extract Management AccountID from ARN
+	mgmtAccountID := re.FindAllString(r.MgmtARN, 1)[0]
+
+	if mgmtAccountID == "" {
+		logger.Error(err, "Unable to extract Management Account ID from ARN")
+		return ctrl.Result{}, microerror.Mask(fmt.Errorf("Unable to extract Management Account ID from ARN %s", r.MgmtARN))
+
+	}
+
 	// create the cluster scope.
 	clusterScope, err := scope.NewClusterScope(scope.ClusterScopeParams{
-		AccountId:        accountID,
-		ARN:              arn,
-		ClusterName:      cluster.Name,
-		ClusterNamespace: cluster.Namespace,
-		Region:           cluster.Spec.Provider.Region,
+		AccountId:           accountID,
+		ManagementAccountId: mgmtAccountID,
+		ARN:                 arn,
+		ClusterName:         cluster.Name,
+		ClusterNamespace:    cluster.Namespace,
+		Region:              cluster.Spec.Provider.Region,
 
 		Logger:  logger,
 		Cluster: cluster,

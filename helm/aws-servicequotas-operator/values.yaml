@@ -3,6 +3,7 @@ aws:
   accessKeyID: accesskey
   secretAccessKey: secretkey
   region: region
+  arn: ""
 
 installation:
   name: name
