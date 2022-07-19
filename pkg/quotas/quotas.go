@@ -199,16 +199,16 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 
 			if increaseQuota {
 				if !s.DryRun {
-					s.Scope.Info(fmt.Sprintf("Setting quota for Service %s: Code %s Desired Value: %v", quotaCodeValue.Description, *quotaCodeValue.Code, *quotaCodeValue.Value))
-					increaseRequests := []*servicequotas.RequestServiceQuotaIncreaseInput{
-						{
-							DesiredValue: quotaCodeValue.Value,
-							QuotaCode:    quotaCodeValue.Code,
-							ServiceCode:  &serviceCode,
-						},
-					}
-					for _, r := range increaseRequests {
-						if s.Scope.AccountId() != s.Scope.ManagementAccountId() {
+					if s.Scope.AccountId() != s.Scope.ManagementAccountId() {
+						s.Scope.Info(fmt.Sprintf("Setting quota for Service %s: Code %s Desired Value: %v", quotaCodeValue.Description, *quotaCodeValue.Code, *quotaCodeValue.Value))
+						increaseRequests := []*servicequotas.RequestServiceQuotaIncreaseInput{
+							{
+								DesiredValue: quotaCodeValue.Value,
+								QuotaCode:    quotaCodeValue.Code,
+								ServiceCode:  &serviceCode,
+							},
+						}
+						for _, r := range increaseRequests {
 							_, err = s.Quotas.Client.RequestServiceQuotaIncrease(r)
 							if err != nil {
 								if awsErr, ok := err.(awserr.Error); ok {
@@ -232,6 +232,8 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 							}
 							s.Scope.Info(fmt.Sprintf("Quota successfully requested for Service %s: Code %s, Desired Value: %v", quotaCodeValue.Description, *quotaCodeValue.Code, *quotaCodeValue.Value), s.Scope.ClusterNamespace(), s.Scope.ClusterName())
 						}
+					} else {
+						s.Scope.Info("Ignoring quota requests, workload account matches with management account")
 					}
 				} else {
 					s.Scope.Info(fmt.Sprintf("Would set quota for Service %s: Code %s, Desired Value: %v ", quotaCodeValue.Description, *quotaCodeValue.Code, *quotaCodeValue.Value))
