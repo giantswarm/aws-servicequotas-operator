@@ -44,7 +44,7 @@ func New(scope *scope.ClusterScope, client client.Client, dryRun bool) *QuotasSe
 func (s *QuotasService) Reconcile(ctx context.Context) {
 	s.Scope.Info("Reconciling AWSCluster CR for service quotas ")
 
-	// Default quotas we want to set
+	// Default quotas we want to set only for workload cluster accounts
 	quotas := map[string][]QuotaCodeValue{
 		"s3": {
 			{
@@ -55,12 +55,13 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 			},
 		},
 		"vpc": {
-			{
-				Description: "Routes per route table",
+			// TODO: Apply in Management Account
+			//{
+			//Description: "Routes per route table",
 
-				Code:  aws.String("L-93826ACB"),
-				Value: aws.Float64(50),
-			},
+			//Code:  aws.String("L-93826ACB"),
+			//Value: aws.Float64(200),
+			//},
 			{
 				Description: "VPCs per Region",
 

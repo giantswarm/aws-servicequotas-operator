@@ -34,7 +34,7 @@ spec:
         - name: AWS_SHARED_CREDENTIALS_FILE
           value: /home/.aws/credentials
         args:
-         - --mgmt-arn=$(DEFAULT_AWS_MGTM_ARN)
+         - --mgmt-arn=$(DEFAULT_AWS_MGMT_ARN)
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
