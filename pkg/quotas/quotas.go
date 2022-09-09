@@ -120,7 +120,7 @@ func (s *QuotasService) Reconcile(ctx context.Context) {
 				Description: "Launch configurations per region",
 
 				Code:  aws.String("L-6B80B8FA"),
-				Value: aws.Float64(500),
+				Value: aws.Float64(200),
 			},
 		},
 	}
