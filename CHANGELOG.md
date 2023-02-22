@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Modified
+
+- Add missing volumes to PSP
+- Bump Golang to 1.19
+
 ## [0.4.0] - 2022-07-19
 
 ### Added
