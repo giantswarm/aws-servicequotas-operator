@@ -3,7 +3,7 @@ module github.com/giantswarm/aws-servicequotas-operator
 go 1.19
 
 require (
-	github.com/aws/aws-sdk-go v1.44.206
+	github.com/aws/aws-sdk-go v1.48.1
 	github.com/giantswarm/apiextensions/v6 v6.5.0
 	github.com/giantswarm/microerror v0.4.0
 	github.com/go-logr/logr v1.2.3
@@ -54,11 +54,11 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
-	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/oauth2 v0.5.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/term v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/term v0.13.0 // indirect
+	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.2.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
