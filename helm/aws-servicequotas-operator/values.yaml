@@ -15,7 +15,7 @@ image:
   name: "giantswarm/aws-servicequotas-operator"
   tag: "[[ .Version ]]"
 registry:
-  domain: docker.io
+  domain: gsoci.azurecr.io
 
 pod:
   user:
@@ -44,7 +44,7 @@ securityContext:
   allowPrivilegeEscalation: false
   capabilities:
     drop:
-    - ALL
+      - ALL
 
 global:
   podSecurityStandards:
