@@ -18,3 +18,5 @@ CVE-2023-32731 until=2023-11-30
 
 #pkg:golang/golang.org/x/net@v0.7.0
 CVE-2023-3978 until=2023-11-30
+
+CVE-2024-24786
