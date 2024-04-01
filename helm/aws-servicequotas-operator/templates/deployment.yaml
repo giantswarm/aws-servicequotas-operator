@@ -38,6 +38,10 @@ spec:
           value: /home/.aws/credentials
         args:
          - --mgmt-arn=$(DEFAULT_AWS_MGMT_ARN)
+        ports:
+        - name: metrics
+          protocol: TCP
+          containerPort: 8080
         securityContext:
           {{- with .Values.securityContext }}
             {{- . | toYaml | nindent 10 }}
