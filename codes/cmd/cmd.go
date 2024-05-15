@@ -29,7 +29,7 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(&arn, "arn", "", "AWS assumed role name, e.g. `arn:aws:iam::180547736195:role/GiantSwarmAWSOperator`")
+	rootCmd.PersistentFlags().StringVar(&arn, "arn", "", "AWS assumed role name, e.g. `arn:aws:iam::123456789012:role/GiantSwarmAWSOperator`")
 	rootCmd.MarkPersistentFlagRequired("arn")
 	rootCmd.PersistentFlags().StringVar(&code, "code", "", "Service quota code, e.g. `s3`")
 	rootCmd.MarkPersistentFlagRequired("code")
