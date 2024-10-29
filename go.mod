@@ -3,7 +3,7 @@ module github.com/giantswarm/aws-servicequotas-operator
 go 1.19
 
 require (
-	github.com/aws/aws-sdk-go v1.48.1
+	github.com/aws/aws-sdk-go v1.55.5
 	github.com/giantswarm/apiextensions/v6 v6.5.0
 	github.com/giantswarm/microerror v0.4.0
 	github.com/go-logr/logr v1.2.3
