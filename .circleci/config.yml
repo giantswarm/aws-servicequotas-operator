@@ -9,6 +9,7 @@ workflows:
     - architect/go-build:
         name: go-build
         binary: aws-servicequotas-operator
+        golang: "1.19"
         filters:
           tags:
             only: /^v.*/
