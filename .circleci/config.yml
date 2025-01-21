@@ -22,9 +22,7 @@ workflows:
           tags:
             only: /^v.*/
           branches:
-            ignore:
-            - main
-            - master
+            only: /.*/
     - architect/push-to-app-catalog:
         context: architect
         name: push-aws-servicequotas-operator-to-app-catalog
@@ -38,9 +36,7 @@ workflows:
           tags:
             only: /^v.*/
           branches:
-            ignore:
-            - main
-            - master
+            only: /.*/
     - architect/push-to-app-collection:
         name: aws-app-collection
         context: architect
