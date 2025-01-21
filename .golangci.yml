@@ -1,0 +1,17 @@
+linters:
+  disable-all: true
+  enable:
+    - gofmt
+    - govet
+    - staticcheck
+    - gosimple
+    - ineffassign
+    - unused
+
+issues:
+  exclude-rules:
+    - path: ".*"
+      text: "golang.org/x/net"
+
+run:
+  timeout: 5m
