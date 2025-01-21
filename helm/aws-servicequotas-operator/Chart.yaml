@@ -1,7 +1,8 @@
 name: aws-servicequotas-operator
-version: [[ .Version ]]
+version: 0.0.1-dev
 description: "Operator for seeting VPC connection peering tags"
-appVersion: "[[ .AppVersion ]]"
+appVersion: "0.0.1-dev"
+icon: https://s.giantswarm.io/app-icons/aws/1/dark.svg
 home: "https://github.com/giantswarm/aws-servicequotas-operator"
 apiVersion: v1
 annotations:
